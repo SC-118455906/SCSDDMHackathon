@@ -1,0 +1,109 @@
+<html>
+	<!--this code was taken and adapted from leafletjs.com-->
+	<head>
+		<link rel="stylesheet" href="https://unpkg.com/leaflet@1.7.1/dist/leaflet.css"
+		integrity="sha512-xodZBNTC5n17Xt2atTPuE1HxjVMSvLVW9ocqUKLsCC5CXdbqCmblAshOMAS6/keqq/sMZMZ19scR4PsZChSR7A=="
+		crossorigin=""/>
+		
+		<!-- adding in the style sheet from the leaflet webpage-->
+		<script src="https://unpkg.com/leaflet@1.7.1/dist/leaflet.js"
+		integrity="sha512-XQoYMqMTK8LvdxXYG3nZ448hOEQiglfqkJs1NOQV44cWnUrBc8PkAOcXy20w0vlaXaVUearIOBhiXZ5V3ynxwA=="
+		crossorigin=""></script>
+
+		
+		<style>
+		/*#lockdownMap{
+			height: 1800px;
+		}*/
+
+		body {
+    	padding: 0;
+    	margin: 0;
+		}
+		
+		html, body, #lockdownMap {
+		height: 100%;
+		width: 100vw;
+		} 
+		</style>
+
+		<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />	
+
+	</head>
+	
+	<body>
+		<div id="lockdownMap"></div>
+		<script>
+		//Creating variable to equal layer
+		var layer1;
+		//creating the map and setting the default view and zoom
+		var mymap = L.map('lockdownMap', {layers: layer1}).setView([0, 0], 3);	
+		
+		//crediting the openstreetmap attribution
+		const attribution = '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMaps</a> contributors';
+		
+		//getting the tiles from OpenStreetMap
+		const tileUrl = 'https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png';
+			
+		//applying the tiles
+		const tiles = L.tileLayer(tileUrl, { attribution });
+		
+		tiles.addTo(mymap);
+		
+		//finding the users current position
+		mymap.locate({setView: true, maxZoom: 16});	
+
+		function onLocationFound(e) {
+			//Creating circle of 5km radius
+			var circle1 = L.circle(e.latlng, {
+   		 	color: 'red',
+   			fillColor: '#f03',
+    		fillOpacity: 0.5,
+    		radius: 5000
+			});
+
+			//Creeating Circle of 10km radius
+			var circle2 = L.circle(e.latlng, {
+   		 	color: 'green',
+   			fillColor: 'green',
+    		fillOpacity: 0.5,
+    		radius: 10000
+			});
+
+			//Creating circle of 20km radius
+			var circle3 = L.circle(e.latlng, {
+   		 	color: 'blue',
+   			fillColor: 'blue',
+    		fillOpacity: 0.5,
+    		radius: 20000
+			
+			});
+
+			//Letting circles equal to a baselayer
+			var overlaymap = {
+				"Level 5": circle1,
+				"Level 4": circle2,
+				"Level 3": circle3
+			}
+			//Adding the overlay layer to the map
+			L.control.layers(overlaymap).addTo(mymap);
+			
+			var radius = e.accuracy;
+
+			L.marker(e.latlng).addTo(mymap)
+				.bindPopup("You are within " + radius + " meters from this point").openPopup();
+				color: 'green'
+			
+		}
+
+		mymap.on('locationfound', onLocationFound);
+
+		function onLocationError(e) {
+    		alert(e.message);
+		}
+
+		mymap.on('locationerror', onLocationError);
+
+		</script>
+	</body>
+</html>
